@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gokul Das — Video Editor & Videographer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #e8441a;
+    --accent2: #f5a623;
+    --mid: #1e1e1e;
+    --muted: #5a5a5a;
+    --border: rgba(245,240,232,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(245,240,232,0.5);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.08s ease;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 48px;
+    mix-blend-mode: difference;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 80px 60px 80px 80px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 9vw, 130px);
+    line-height: 0.9;
+    letter-spacing: -1px;
+    color: var(--white);
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+  .hero-name span { color: var(--accent); }
+  .hero-role {
+    margin-top: 28px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.55);
+    max-width: 420px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+  .hero-cta {
+    margin-top: 44px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.9s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--white);
+    padding: 14px 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: #c73410; transform: translateY(-2px); }
+  .btn-outline {
+    color: var(--white);
+    padding: 14px 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(245,240,232,0.3);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--white); transform: translateY(-2px); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(200px, 22vw, 360px);
+    color: rgba(245,240,232,0.03);
+    top: 50%;
+    right: -40px;
+    transform: translateY(-50%);
+    line-height: 1;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .hero-visual {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .film-strip {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 100px 60px 80px 0;
+  }
+  .strip-row {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+  }
+  .strip-row:nth-child(1) { animation-delay: 0.4s; }
+  .strip-row:nth-child(2) { animation-delay: 0.6s; }
+  .strip-row:nth-child(3) { animation-delay: 0.8s; }
+  .strip-row:nth-child(4) { animation-delay: 1.0s; }
+  .strip-row:nth-child(5) { animation-delay: 1.2s; }
+  .frame {
+    flex: 1;
+    height: 80px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .frame:hover { border-color: var(--accent); }
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(232,68,26,0.15) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .frame:hover::before { opacity: 1; }
+  .frame-hole {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(245,240,232,0.08);
+    position: absolute;
+    top: 6px; left: 6px;
+  }
+  .frame-hole-br {
+    bottom: 6px; right: 6px;
+    top: auto; left: auto;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    background: var(--accent);
+    overflow: hidden;
+    padding: 14px 0;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: marquee 18s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--white);
+    padding: 0 32px;
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 32px;
+  }
+  .marquee-dot {
+    width: 6px; height: 6px;
+    background: rgba(245,240,232,0.5);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ABOUT */
+  section { padding: 120px 80px; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 5vw, 72px);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .about-headline em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .about-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.6);
+    margin-bottom: 32px;
+  }
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.4);
+    margin-top: 6px;
+  }
+
+  /* SKILLS */
+  .skills-section {
+    background: var(--mid);
+    padding: 120px 80px;
+  }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 0;
+  }
+  .skill-card {
+    background: var(--black);
+    padding: 40px 36px;
+    border: 1px solid transparent;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .skill-card:hover::before { transform: scaleX(1); }
+  .skill-card:hover { border-color: var(--border); transform: translateY(-4px); }
+  .skill-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .skill-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .skill-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.45);
+  }
+
+  /* TOOLS */
+  .tools-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 48px;
+  }
+  .tool-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    color: rgba(245,240,232,0.6);
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .tool-tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* EXPERIENCE */
+  .exp-list { display: flex; flex-direction: column; gap: 0; }
+  .exp-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 48px;
+    padding: 52px 0;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+    position: relative;
+  }
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: -80px; right: -80px; top: 0; bottom: 0;
+    background: var(--mid);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 0;
+  }
+  .exp-item:hover::before { opacity: 1; }
+  .exp-item > * { position: relative; z-index: 1; }
+  .exp-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    padding-top: 6px;
+  }
+  .exp-company {
+    font-size: 12px;
+    color: rgba(245,240,232,0.35);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+  .exp-role {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .exp-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .exp-bullets li {
+    font-size: 14px;
+    line-height: 1.65;
+    color: rgba(245,240,232,0.55);
+    padding-left: 20px;
+    position: relative;
+  }
+  .exp-bullets li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  /* ACHIEVEMENTS */
+  .achievements-section {
+    background: var(--accent);
+    padding: 100px 80px;
+  }
+  .achievements-section .section-label { color: var(--white); }
+  .achievements-section .section-label::after { background: var(--white); }
+  .ach-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+  .ach-card {
+    border: 1px solid rgba(245,240,232,0.3);
+    padding: 40px 32px;
+    transition: background 0.3s;
+  }
+  .ach-card:hover { background: rgba(245,240,232,0.1); }
+  .ach-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(245,240,232,0.2);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .ach-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(245,240,232,0.9);
+  }
+
+  /* CERTIFICATIONS */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 0;
+  }
+  .cert-card {
+    border: 1px solid var(--border);
+    padding: 40px 40px 44px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .cert-card:hover { border-color: var(--accent); }
+  .cert-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .cert-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+  }
+  .cert-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cert-list li {
+    font-size: 13px;
+    color: rgba(245,240,232,0.5);
+    padding-left: 16px;
+    position: relative;
+  }
+  .cert-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    padding: 140px 80px;
+    background: var(--black);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-bg {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(245,240,232,0.025);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+  }
+  .contact-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 100px);
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .contact-headline span { color: var(--accent); }
+  .contact-sub {
+    font-size: 15px;
+    color: rgba(245,240,232,0.45);
+    margin: 24px auto 48px;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+  }
+  .contact-links {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    padding: 16px 28px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,68,26,0.06);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--mid);
+    padding: 36px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 4px;
+    color: var(--white);
+  }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(245,240,232,0.3);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SHOWREEL SECTION */
+  .showreel-section {
+    background: var(--mid);
+    padding: 120px 80px;
+  }
+  .showreel-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 48px;
+  }
+  .showreel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .showreel-title span { color: var(--accent); }
+  .showreel-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(245,240,232,0.35);
+    text-transform: uppercase;
+    padding-bottom: 8px;
+  }
+
+  /* VIDEO GALLERY */
+  .video-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 0;
+  }
+  .vid-card {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    background: var(--black);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .vid-card.portrait-card {
+    padding-bottom: 177.78%;
+  }
+  .vid-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 2;
+  }
+  .vid-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+  .vid-card iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="#" class="nav-logo">GD</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#showreel">Showreel</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-tag">Video Editor & Videographer — Bangalore</p>
+    <h1 class="hero-name">GOKUL<br><span>DAS</span></h1>
+    <p class="hero-role">Results-driven visual storyteller with expertise in post-production, product videography, studio operations, and branded digital content creation.</p>
+    <div class="hero-cta">
+      <a href="#experience" class="btn-primary">View Work</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-bg-text">FRAME</div>
+    <div class="hero-visual">
+      <div class="film-strip">
+        <div class="strip-row">
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+        </div>
+        <div class="strip-row">
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+        </div>
+        <div class="strip-row">
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+        </div>
+        <div class="strip-row">
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+        </div>
+        <div class="strip-row">
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+          <div class="frame"><div class="frame-hole"></div><div class="frame-hole frame-hole-br"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item">Adobe Premiere Pro <span class="marquee-dot"></span></div>
+    <div class="marquee-item">After Effects <span class="marquee-dot"></span></div>
+    <div class="marquee-item">DaVinci Resolve <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Final Cut Pro <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Color Grading <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Studio Operations <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Product Videography <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Motion Graphics <span class="marquee-dot"></span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="marquee-item">Adobe Premiere Pro <span class="marquee-dot"></span></div>
+    <div class="marquee-item">After Effects <span class="marquee-dot"></span></div>
+    <div class="marquee-item">DaVinci Resolve <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Final Cut Pro <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Color Grading <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Studio Operations <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Product Videography <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Motion Graphics <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- SHOWREEL -->
+<section class="showreel-section" id="showreel">
+  <div class="section-label reveal">Showreel</div>
+  <div class="showreel-header reveal">
+    <h2 class="showreel-title">WATCH MY<br><span>WORK</span></h2>
+    <div class="showreel-sub">Featured Work · 2024</div>
+  </div>
+
+  <div class="video-gallery reveal reveal-delay-1">
+
+    <!-- 16:9 videos span 1 column each -->
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/9-LDcNaB2mM" title="Showreel" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/_d2R9Z2bY2g" title="Featured Edit" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <!-- portrait video spans 1 col but taller -->
+    <div class="vid-card portrait-card" style="grid-row: span 2;">
+      <iframe src="https://www.youtube.com/embed/Bqi0Xkd9ztQ" title="Short Form" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/2Zv6QjQ3laY" title="Latest Work" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/PA3CQXu_vpM" title="Recent Edit" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/9rZKFwhguWE" title="Edit" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/T5S548nR7vo" title="Edit" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/aiLfGphB2Xg" title="Edit" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="vid-card">
+      <iframe src="https://www.youtube.com/embed/gGJekEbT_9I" title="Edit" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div>
+      <div class="section-label reveal">About Me</div>
+      <h2 class="about-headline reveal reveal-delay-1">FRAMES<br>TELL <em>STORIES</em></h2>
+      <div class="stat-row reveal reveal-delay-2">
+        <div>
+          <div class="stat-num">3+</div>
+          <div class="stat-label">Years Exp.</div>
+        </div>
+        <div>
+          <div class="stat-num">3</div>
+          <div class="stat-label">Companies</div>
+        </div>
+        <div>
+          <div class="stat-num">2×</div>
+          <div class="stat-label">Recognized</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="about-text reveal">With over three years of professional experience, I specialize in crafting visual narratives that connect with audiences — from educational content for digital platforms to branded product campaigns and live-event coverage.</p>
+      <p class="about-text reveal reveal-delay-1">Currently serving as a Senior Associate at Physics Wallah, I manage full end-to-end post-production workflows and maintain high production standards across multiple formats and delivery requirements.</p>
+      <p class="about-text reveal reveal-delay-2">Recipient of the Best Performer Award (Grassroots) and recognized multiple times for excellence under pressure. Based in Bangalore, open to collaborations across India and internationally.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="section-label reveal">What I Do</div>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <span class="skill-icon">🎬</span>
+      <div class="skill-name">Video Editing</div>
+      <div class="skill-desc">End-to-end post-production including cuts, transitions, color grading, audio cleanup, and export optimization for all platforms.</div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1">
+      <span class="skill-icon">📸</span>
+      <div class="skill-name">Videography</div>
+      <div class="skill-desc">Camera operations, exposure control, composition, and lighting setup for product shoots, live events, and studio productions.</div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <span class="skill-icon">📦</span>
+      <div class="skill-name">Product Video</div>
+      <div class="skill-desc">Crafting compelling e-commerce and brand videos for Amazon campaigns and digital marketing with high visual impact.</div>
+    </div>
+    <div class="skill-card reveal">
+      <span class="skill-icon">🎨</span>
+      <div class="skill-name">Color & Audio</div>
+      <div class="skill-desc">Color correction and grading for narrative and commercial work; audio editing, cleanup, and sound design fundamentals.</div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1">
+      <span class="skill-icon">⚡</span>
+      <div class="skill-name">Motion Graphics</div>
+      <div class="skill-desc">Creating dynamic visual elements and animations using After Effects to enhance storytelling and brand identity.</div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <span class="skill-icon">🗂️</span>
+      <div class="skill-name">Studio Workflow</div>
+      <div class="skill-desc">Scheduling, resource coordination, and production management to deliver high-quality content under tight deadlines.</div>
+    </div>
+  </div>
+
+  <div class="tools-row reveal">
+    <div class="tool-tag">Adobe Premiere Pro</div>
+    <div class="tool-tag">After Effects</div>
+    <div class="tool-tag">Final Cut Pro</div>
+    <div class="tool-tag">DaVinci Resolve</div>
+    <div class="tool-tag">Adobe Photoshop</div>
+    <div class="tool-tag">Figma</div>
+    <div class="tool-tag">Canva</div>
+    <div class="tool-tag">Microsoft Excel</div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label reveal">Experience</div>
+  <div class="exp-list">
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">Mar 2023 — Present</div>
+        <div class="exp-company">Physics Wallah</div>
+      </div>
+      <div>
+        <div class="exp-role">Senior Associate — Video Editor & Videographer</div>
+        <ul class="exp-bullets">
+          <li>Edit and produce high-quality educational video content for digital learning platforms.</li>
+          <li>Manage end-to-end post-production workflows including editing, audio cleanup, and export optimization.</li>
+          <li>Ensure content meets platform specifications while maintaining visual consistency and production quality.</li>
+          <li>Support studio operations, scheduling, and resource coordination to meet tight production deadlines.</li>
+          <li>Maintain high production standards across multiple video formats and delivery requirements.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">Jun 2022 — Mar 2023</div>
+        <div class="exp-company">Clay Art Media</div>
+      </div>
+      <div>
+        <div class="exp-role">Video Production Executive</div>
+        <ul class="exp-bullets">
+          <li>Produced and edited Amazon product videos using Adobe Premiere Pro for e-commerce and marketing campaigns.</li>
+          <li>Created after-movies and event highlight videos for live performances and music events.</li>
+          <li>Delivered engaging visual content aligned with brand goals and audience engagement strategies.</li>
+          <li>Managed video production from shooting through post-production delivery.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">Jan 2022 — Jun 2022</div>
+        <div class="exp-company">Freelance</div>
+      </div>
+      <div>
+        <div class="exp-role">Product Videographer & Editor</div>
+        <ul class="exp-bullets">
+          <li>Collaborated on photography, videography, and editing projects for product brands in India and the Middle East.</li>
+          <li>Produced high-quality visual assets while maintaining brand consistency across markets.</li>
+          <li>Supported product shoots, lighting setup, editing, and post-production workflows.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section class="achievements-section">
+  <div class="section-label reveal">Achievements</div>
+  <div class="ach-grid">
+    <div class="ach-card reveal">
+      <div class="ach-num">01</div>
+      <div class="ach-text">Received the Best Performer Award (Grassroots) for outstanding performance in video production.</div>
+    </div>
+    <div class="ach-card reveal reveal-delay-1">
+      <div class="ach-num">02</div>
+      <div class="ach-text">Recognized twice for consistently delivering high-quality video content under tight deadlines.</div>
+    </div>
+    <div class="ach-card reveal reveal-delay-2">
+      <div class="ach-num">03</div>
+      <div class="ach-text">Successfully contributed to branded content, educational media production, and live-event video coverage.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section>
+  <div class="section-label reveal">Certifications</div>
+  <div class="cert-grid">
+    <div class="cert-card reveal">
+      <div class="cert-label">Certified</div>
+      <div class="cert-title">Videography & Photography</div>
+      <ul class="cert-list">
+        <li>Camera & Lens Operations</li>
+        <li>White Balance & Exposure Triangle</li>
+        <li>Camera Metering & Focus Techniques</li>
+        <li>Composition & Shooting Techniques</li>
+        <li>Post-Processing Fundamentals</li>
+      </ul>
+    </div>
+    <div class="cert-card reveal reveal-delay-1">
+      <div class="cert-label">Certified</div>
+      <div class="cert-title">Video Editing</div>
+      <ul class="cert-list">
+        <li>Adobe Premiere Pro Fundamentals</li>
+        <li>Visual Editing Techniques</li>
+        <li>Audio Editing</li>
+        <li>Green Screen Editing</li>
+        <li>Exporting & Delivery Workflows</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:40px; padding:28px 32px; border:1px solid var(--border); display:inline-block;" class="reveal">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">Education</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;">Bachelor of Engineering — Electrical & Electronics</div>
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(245,240,232,0.4);margin-top:6px;letter-spacing:1px;">MEA Engineering College &nbsp;·&nbsp; 2011–2015</div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-bg">HELLO</div>
+  <h2 class="contact-headline reveal">LET'S CREATE<br><span>TOGETHER</span></h2>
+  <p class="contact-sub reveal">Open to freelance projects, full-time roles, and creative collaborations. Based in Bangalore, available worldwide.</p>
+  <div class="contact-links reveal">
+    <a href="mailto:gokulldaas@gmail.com" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      gokulldaas@gmail.com
+    </a>
+    <a href="tel:+919446371905" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 11.9 19.79 19.79 0 0 1 1.07 3.32 2 2 0 0 1 3.05 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>
+      +91 94463 71905
+    </a>
+    <a href="https://linkedin.com/in/gokul-das-2372b52a1" target="_blank" class="contact-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      LinkedIn
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">GOKUL DAS</div>
+  <div class="footer-copy">© 2025 — Video Editor & Videographer, Bangalore</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 6 + 'px';
+    cursor.style.top = my - 6 + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(2.5)');
+    el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
